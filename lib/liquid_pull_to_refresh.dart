@@ -50,6 +50,7 @@ class LiquidPullToRefresh extends StatefulWidget {
     @required this.onRefresh,
     this.color,
     this.backgroundColor,
+    this.clipDifferenceColor,
     this.notificationPredicate = defaultScrollNotificationPredicate,
     this.height,
     this.springAnimationDurationInMilliseconds = 1000,
@@ -103,6 +104,10 @@ class LiquidPullToRefresh extends StatefulWidget {
   /// The progress indicator's background color. The current theme's
   /// [ThemeData.canvasColor] by default.
   final Color backgroundColor;
+
+  /// The color shown between the clipped curve and the scrollView
+  /// The current theme's [ThemeData.canvasColor] by default.
+  final Color clipDifferenceColor;
 
   /// A check that specifies whether a [ScrollNotification] should be
   /// handled by this widget.
@@ -562,6 +567,7 @@ class _LiquidPullToRefreshState extends State<LiquidPullToRefresh>
     // assigning default color and background color
     Color _defaultColor = Theme.of(context).accentColor;
     Color _defaultBackgroundColor = Theme.of(context).canvasColor;
+    Color _defaultClipDifferenceColor = Theme.of(context).canvasColor;
 
     // assigning default height
     double _defaultHeight = 100.0;
@@ -571,6 +577,9 @@ class _LiquidPullToRefreshState extends State<LiquidPullToRefresh>
     Color backgroundColor = (widget.backgroundColor != null)
         ? widget.backgroundColor
         : _defaultBackgroundColor;
+    Color clipDifferenceColor = (widget.clipDifferenceColor != null)
+        ? widget.clipDifferenceColor
+        : _defaultClipDifferenceColor;
     double height = (widget.height != null) ? widget.height : _defaultHeight;
 
     // converting list items to slivers
@@ -675,25 +684,28 @@ class _LiquidPullToRefreshState extends State<LiquidPullToRefresh>
             _showPeakController,
           ]),
           builder: (BuildContext buildContext, Widget child) {
-            return ClipPath(
-              clipper: CurveHillClipper(
-                centreHeight: height,
-                curveHeight: height / 2 * _springAnimation.value, // 50.0
-                peakHeight: height *
-                    3 /
-                    10 *
-                    ((_peakHeightUpAnimation.value != 1.0) //30.0
-                        ? _peakHeightUpAnimation.value
-                        : _peakHeightDownAnimation.value),
-                peakWidth: (_peakHeightUpAnimation.value != 0.0 &&
-                        _peakHeightDownAnimation.value != 0.0)
-                    ? height * 35 / 100 //35.0
-                    : 0.0,
-              ),
-              child: Container(
-                height: _value.value * height * 2, // 100.0
-                color: color,
-              ),
+            return Container(
+              color: clipDifferenceColor,
+              child: ClipPath(
+                clipper: CurveHillClipper(
+                  centreHeight: height,
+                  curveHeight: height / 2 * _springAnimation.value, // 50.0
+                  peakHeight: height *
+                      3 /
+                      10 *
+                      ((_peakHeightUpAnimation.value != 1.0) //30.0
+                          ? _peakHeightUpAnimation.value
+                          : _peakHeightDownAnimation.value),
+                  peakWidth: (_peakHeightUpAnimation.value != 0.0 &&
+                          _peakHeightDownAnimation.value != 0.0)
+                      ? height * 35 / 100 //35.0
+                      : 0.0,
+                ),
+                child: Container(
+                  height: _value.value * height * 2, // 100.0
+                  color: color,
+                ),
+              )
             );
           },
         ),
