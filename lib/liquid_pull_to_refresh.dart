@@ -654,6 +654,13 @@ class _LiquidPullToRefreshState extends State<LiquidPullToRefresh>
 
     return Stack(
       children: <Widget>[
+        SizedBox(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: Container(
+            color: clipDifferenceColor,
+          )
+        ),
         AnimatedBuilder(
           animation: _positionController,
           builder: (BuildContext buildContext, Widget child) {
@@ -684,28 +691,25 @@ class _LiquidPullToRefreshState extends State<LiquidPullToRefresh>
             _showPeakController,
           ]),
           builder: (BuildContext buildContext, Widget child) {
-            return Container(
-              color: clipDifferenceColor,
-              child: ClipPath(
-                clipper: CurveHillClipper(
-                  centreHeight: height,
-                  curveHeight: height / 2 * _springAnimation.value, // 50.0
-                  peakHeight: height *
-                      3 /
-                      10 *
-                      ((_peakHeightUpAnimation.value != 1.0) //30.0
-                          ? _peakHeightUpAnimation.value
-                          : _peakHeightDownAnimation.value),
-                  peakWidth: (_peakHeightUpAnimation.value != 0.0 &&
-                          _peakHeightDownAnimation.value != 0.0)
-                      ? height * 35 / 100 //35.0
-                      : 0.0,
-                ),
-                child: Container(
-                  height: _value.value * height * 2, // 100.0
-                  color: color,
-                ),
-              )
+            return ClipPath(
+              clipper: CurveHillClipper(
+                centreHeight: height,
+                curveHeight: height / 2 * _springAnimation.value, // 50.0
+                peakHeight: height *
+                    3 /
+                    10 *
+                    ((_peakHeightUpAnimation.value != 1.0) //30.0
+                        ? _peakHeightUpAnimation.value
+                        : _peakHeightDownAnimation.value),
+                peakWidth: (_peakHeightUpAnimation.value != 0.0 &&
+                        _peakHeightDownAnimation.value != 0.0)
+                    ? height * 35 / 100 //35.0
+                    : 0.0,
+              ),
+              child: Container(
+                height: _value.value * height * 2, // 100.0
+                color: color,
+              ),
             );
           },
         ),
